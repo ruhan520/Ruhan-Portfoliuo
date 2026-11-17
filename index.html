@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruhan - Shopify & WordPress Developer</title>
+
+  <style>
+    /* ================= RESET ================= */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0A0818;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    a { color: #fff; text-decoration: none; cursor: none; }
+
+    /* ================= CURSOR - AGER TA ================= */
+    #cursorRing {
+      position: fixed; top: 0; left: 0;
+      width: 38px; height: 38px;
+      border: 1.5px solid rgba(255,255,255,.85);
+      border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width .25s ease, height .25s ease, background .25s ease, border-color .25s ease;
+      mix-blend-mode: difference;
+    }
+    #cursorDot {
+      position: fixed; top: 0; left: 0;
+      width: 6px; height: 6px; background: #fff;
+      border-radius: 50%; pointer-events: none; z-index: 10000;
+      transform: translate(-50%, -50%);
+    }
+    #cursorRing.big { width: 70px; height: 70px; background: rgba(192,132,252,.15); border-color: #C084FC; }
+
+    @media (max-width: 800px) {
+      #cursorRing, #cursorDot { display: none; }
+      body, a { cursor: auto; }
+    }
+
+    /* ================= HERO - AGER MOTO SAJANO ================= */
+    .hero-wrap {
+      background:
+        radial-gradient(800px 600px at 8% 30%, rgba(88,28,135,.85), rgba(76,29,149,.55) 35%, transparent 65%),
+        radial-gradient(600px 500px at 95% 80%, rgba(190,30,60,.18), transparent 60%),
+        linear-gradient(180deg, #0A061E 0%, #0A061E 100%);
+    }
+    .about-wrap { background: #100E1E; border-top: 1px solid #1E1B30; }
+    .work-wrap { background: #0A0818; }
+
+    header {
+      position: fixed; top: 0; left: 0; width: 100%;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 40px; z-index: 100;
+    }
+    .logo { font-size: 22px; font-weight: 900; font-family: Georgia, serif; }
+    nav a { margin-left: 22px; font-size: 11px; letter-spacing: 1px; opacity: .8; }
+
+    .hero {
+      position: relative; z-index: 2;
+      max-width: 1250px; margin: auto;
+      padding: 90px 40px 10px;
+      display: flex; gap: 20px; align-items: center;
+      min-height: 100vh;
+    }
+    .hero-text { flex: 1; }
+    .hero-text small { font-size: 10px; letter-spacing: 3px; opacity: .7; }
+    .hero-text h1 {
+      font-family: Georgia, serif; font-size: 90px; line-height: .95;
+      font-weight: 400; margin: 18px 0 20px;
+    }
+    .hero-text h1 i {
+      font-style: italic;
+      background: linear-gradient(90deg, #60A5FA, #A78BFA, #E879F9, #FB7185);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-text p { font-size: 15px; line-height: 1.7; opacity: .9; max-width: 420px; }
+    .hero-text p b { color: #FB7185; }
+    .hero-text .founder { margin-top: 28px; font-size: 11px; opacity: .55; line-height: 1.8; }
+
+    /* ---------- Hero Pic - Ager Moto Sajano, Kunu Animation Nai ---------- */
+    .hero-img { flex: 1.1; position: relative; height: 700px; }
+
+    /* Pic or pise ager moto glow */
+    .hero-img::before {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(139,92,246,.42) 0%, rgba(217,70,239,.22) 35%, rgba(59,130,246,.12) 60%, transparent 70%);
+      filter: blur(30px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-img img {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: contain;
+      object-position: bottom center;
+      display: block;
+      z-index: 1;
+      filter: drop-shadow(0 30px 50px rgba(0,0,0,.45));
+    }
+
+    .hero-img .scroll {
+      position: absolute; right: -10px; top: 50%;
+      transform: rotate(90deg); transform-origin: right;
+      font-size: 9px; letter-spacing: 3px; opacity: .5;
+      white-space: nowrap; z-index: 5;
+    }
+
+    /* ---------- Marquee ---------- */
+    .marquee {
+      position: relative; z-index: 2;
+      border-top: 1px solid #222; border-bottom: 1px solid #222;
+      padding: 12px 0; overflow: hidden; white-space: nowrap;
+      font-size: 12px; letter-spacing: 2px; opacity: .7; background: #0A0818;
+    }
+    .marquee span { display: inline-block; animation: scroll 18s linear infinite; }
+    @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ================= SECTION COMMON ================= */
+    .section { position: relative; z-index: 2; padding: 70px 40px; max-width: 1150px; margin: auto; }
+    .section small { font-size: 11px; letter-spacing: 3px; color: #A78BFA; }
+    .section h2 { font-family: Georgia, serif; font-size: 54px; font-weight: 400; line-height: 1.05; margin: 15px 0 20px; }
+    .section h2 i {
+      background: linear-gradient(90deg, #C084FC, #F472B6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .section p { line-height: 1.8; opacity: .8; max-width: 650px; margin-bottom: 12px; }
+
+    /* ================= ABOUT ================= */
+    .about-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 60px; margin-top: 35px; }
+    .about-left p { font-size: 16px; line-height: 1.85; color: #C7C5D8; margin-bottom: 26px; }
+    .about-left p b { color: #fff; }
+    .about-right { padding-top: 6px; }
+    .info-row { display: grid; grid-template-columns: 130px 1fr; gap: 20px; padding: 20px 0; border-top: 1px solid #2A2740; }
+    .info-row:last-child { border-bottom: 1px solid #2A2740; }
+    .info-row span { font-size: 10px; letter-spacing: 2px; color: #8B87A3; padding-top: 4px; }
+    .info-row p { font-size: 15px; line-height: 1.6; color: #EDEDF2; }
+
+    .stats-box {
+      background: #161326; border: 1px solid #24203A; border-radius: 16px;
+      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; overflow: hidden; margin-top: 50px;
+    }
+    .stat-cell { padding: 32px 28px 28px; border-right: 1px solid #24203A; }
+    .stat-cell:last-child { border-right: none; }
+    .stat-cell h3 { font-family: Georgia, serif; font-size: 58px; font-weight: 400; line-height: 1; color: #F2F0FF; letter-spacing: -1px; }
+    .stat-cell p { font-size: 10px; letter-spacing: 2px; color: #7E7A9A; margin-top: 16px; }
+
+    .reveal { opacity: 0; transform: translateY(50px); transition: opacity .9s ease, transform .9s ease; }
+    .reveal.show { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: .1s; }
+    .reveal-d2 { transition-delay: .2s; }
+
+    /* ================= WORK ================= */
+    .work-tilt-wrap { perspective: 1200px; margin: 45px 0 28px; }
+    .work-big {
+      display: flex; background: #131022; border: 1px solid #221E38; border-radius: 20px;
+      overflow: hidden; cursor: pointer; transform-style: preserve-3d;
+      transition: transform .12s linear; will-change: transform;
+      box-shadow: 0 20px 50px rgba(0,0,0,.3); align-items: stretch;
+    }
+    .work-big .w-img { flex: 1.15; position: relative; overflow: hidden; background: #EDE8FF; display: flex; }
+    .work-big .w-img .mock {
+      flex: 1; padding: 24px 24px 0;
+      background: linear-gradient(180deg, #EDE8FF 0%, #E2DCFF 100%);
+      display: flex; flex-direction: column; min-height: 0;
+    }
+    .work-big .w-img .mock-top { font-size: 10px; letter-spacing: 2px; color: #8A84A8; display: flex; justify-content: space-between; }
+    .work-big .w-img .mock h4 { font-family: Georgia, serif; font-size: 30px; font-weight: 700; color: #111; line-height: 1.1; margin: 12px 0 0; }
+    .mock-shot {
+      flex: 1; margin-top: 16px; border-radius: 12px 12px 0 0; overflow: hidden;
+      position: relative; box-shadow: 0 20px 40px rgba(0,0,0,.25); background: #fff;
+      display: flex; flex-direction: column; min-height: 0;
+    }
+    .mock-inner { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .mock-hero { background: linear-gradient(135deg, #7C3AED, #DB2777); padding: 14px 16px; color: #fff; flex-shrink: 0; }
+    .mock-hero b { font-size: 15px; }
+    .mock-hero p { font-size: 11px; opacity: .9; margin-top: 3px; }
+    .mock-row { display: flex; gap: 10px; padding: 8px 12px; border-bottom: 1px solid #eee; align-items: center; flex-shrink: 0; }
+    .mock-thumb { width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0; }
+    .mock-row b { font-size: 12px; color: #111; display: block; }
+    .mock-row span { font-size: 10px; color: #888; }
+    .mock-play {
+      margin-left: auto; width: 26px; height: 26px; border-radius: 50%;
+      background: #111; color: #fff; display: flex; align-items: center;
+      justify-content: center; font-size: 10px; flex-shrink: 0;
+    }
+    .mock-footer { background: #111; color: #fff; padding: 11px; text-align: center; font-size: 11px; flex-shrink: 0; margin-top: auto; }
+    .work-big .w-text { flex: 1; padding: 38px 36px; display: flex; flex-direction: column; justify-content: center; }
+    .work-big .w-text small { font-size: 10px; letter-spacing: 2px; color: #A78BFA; }
+    .work-big .w-text h3 { font-family: Georgia, serif; font-size: 38px; font-weight: 400; margin: 14px 0 16px; }
+    .work-big .w-text h3 span { font-size: 18px; opacity: .6; }
+    .work-big .w-text p { font-size: 14.5px; line-height: 1.75; opacity: .75; }
+    .work-big .role { margin-top: 22px; font-size: 12px; line-height: 1.7; color: #A8A4BE; }
+    .work-big .role b { color: #fff; font-size: 10px; letter-spacing: 2px; }
+    .tag { font-size: 11px; background: #1F1B33; border: 1px solid #2A2740; padding: 7px 12px; border-radius: 20px; display: inline-block; margin: 8px 5px 0 0; color: #D8D5E8; }
+    .case-link { display: inline-block; margin-top: 22px; font-size: 13px; font-weight: 700; border-bottom: 1px solid #fff; padding-bottom: 3px; }
+
+    .work-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; perspective: 1200px; }
+    .work-mini {
+      background: #131022; border: 1px solid #221E38; border-radius: 18px; overflow: hidden;
+      cursor: pointer; transform-style: preserve-3d;
+      transition: transform .12s linear, border-color .3s; will-change: transform;
+    }
+    .work-mini:hover { border-color: #A78BFA; }
+    .work-mini .mini-img { height: 210px; position: relative; overflow: hidden; padding: 18px 0 0; }
+    .work-mini .mini-img h4 { font-family: Georgia, serif; font-size: 20px; line-height: 1.2; color: #fff; position: relative; z-index: 2; padding: 0 18px; }
+    .mini-shot {
+      position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 110px;
+      border-radius: 10px 10px 0 0; overflow: hidden; background: #fff;
+      box-shadow: 0 10px 20px rgba(0,0,0,.2); transform-style: preserve-3d;
+      transition: transform .12s linear; will-change: transform;
+    }
+    .mini-inner { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 10px 18px; }
+    .mini-inner b { font-size: 12px; color: #111; }
+    .mini-inner p { font-size: 10px; color: #777; line-height: 1.4; margin-top: 4px; }
+    .work-mini div { padding: 22px; }
+    .work-mini small { font-size: 9px; letter-spacing: 2px; color: #A78BFA; }
+    .work-mini h3 { font-family: Georgia, serif; font-size: 26px; font-weight: 400; margin: 10px 0 12px; }
+    .work-mini p { font-size: 13.5px; opacity: .72; line-height: 1.7; }
+    .work-mini .role { margin-top: 16px; font-size: 11.5px; line-height: 1.6; color: #A8A4BE; }
+    .work-mini .role b { color: #fff; font-size: 9px; letter-spacing: 2px; }
+
+    /* ================= JOURNEY ================= */
+    .journey-section { background: #120E1D; padding: 80px 40px; }
+    .journey-inner { max-width: 1150px; margin: auto; }
+    .journey-inner small { font-size: 11px; letter-spacing: 3px; color: #A78BFA; }
+    .journey-inner h2 { font-family: Georgia, serif; font-size: 72px; font-weight: 400; line-height: 1.05; margin: 15px 0 20px; }
+    .journey-inner h2 i {
+      font-style: italic;
+      background: linear-gradient(90deg, #A78BFA, #F472B6, #FB7185);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .journey-wrap { position: relative; margin-top: 55px; padding-left: 38px; }
+    .journey-wrap::before { content: ""; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 1px; background: rgba(167,139,250,.35); }
+    .journey-item { position: relative; padding-bottom: 60px; }
+    .journey-item:last-child { padding-bottom: 10px; }
+    .journey-item::before {
+      content: ""; position: absolute; left: -36px; top: 5px;
+      width: 12px; height: 12px; border-radius: 50%; background: #C084FC;
+      box-shadow: 0 0 0 5px #120E1D, 0 0 16px 4px rgba(192,132,252,.45);
+    }
+    .journey-date { font-size: 10px; letter-spacing: 2.5px; color: #8B87A3; margin-bottom: 14px; font-family: monospace; }
+    .journey-item h3 { font-family: Georgia, serif; font-size: 38px; font-weight: 400; line-height: 1.15; margin-bottom: 14px; }
+    .journey-item h3 i { font-style: italic; color: #FB7185; }
+    .journey-item p { font-size: 15.5px; line-height: 1.75; color: #B8B5CC; max-width: 640px; }
+
+    /* ================= JOURNAL ================= */
+    .journal-section { background: #120E1D; padding: 70px 40px 90px; }
+    .journal-inner { max-width: 1150px; margin: auto; }
+    .journal-inner small { font-size: 11px; letter-spacing: 3px; color: #A78BFA; }
+    .journal-inner h2 { font-family: Georgia, serif; font-size: 68px; font-weight: 400; line-height: 1.05; margin: 15px 0 14px; }
+    .journal-inner h2 i {
+      font-style: italic;
+      background: linear-gradient(90deg, #C084FC, #F472B6, #FB7185);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .journal-inner > p { font-size: 14px; color: #A8A4BE; max-width: 600px; line-height: 1.6; }
+    .journal-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; margin-top: 42px; perspective: 1200px; }
+    .journal-card {
+      background: #0F0B19; border: 1px solid rgba(255,255,255,.09); border-radius: 18px;
+      padding: 28px 26px; min-height: 265px; display: flex; flex-direction: column;
+      transform-style: preserve-3d;
+      transition: border-color .35s ease, background .35s ease, box-shadow .35s ease, transform .12s linear;
+      will-change: transform;
+    }
+    .journal-card:hover {
+      background: #0F0B19; border-color: rgba(192,132,252,.7);
+      box-shadow: 0 22px 45px rgba(0,0,0,.5), 0 0 0 1px rgba(192,132,252,.3);
+    }
+    .journal-card small { font-size: 9px; letter-spacing: 2px; color: #A78BFA; font-family: monospace; }
+    .journal-card h3 {
+      font-family: Georgia, serif; font-size: 21px; font-weight: 400; line-height: 1.35;
+      margin: 16px 0 12px; color: #fff; transform: translateZ(20px); transition: color .3s ease;
+    }
+    .journal-card:hover h3 { color: #c98cff; }
+    .journal-card p { font-size: 13.5px; line-height: 1.7; color: #A8A4BE; transform: translateZ(10px); }
+    .journal-card .j-link { margin-top: auto; padding-top: 18px; font-size: 12px; color: #CFCBE8; display: flex; align-items: center; gap: 6px; }
+    .journal-card:hover .j-link { color: #fff; }
+
+    /* ================= HOW I WORK ================= */
+    .how-section { background: #0F0B19; padding: 80px 40px 90px; position: relative; overflow: hidden; }
+    .how-inner {
+      max-width: 1150px; margin: auto; display: grid; grid-template-columns: 1fr 1.05fr;
+      gap: 55px; align-items: center; position: relative; z-index: 2;
+    }
+    .how-left small { font-size: 11px; letter-spacing: 3px; color: #A78BFA; }
+    .how-left h2 { font-family: Georgia, serif; font-size: 62px; font-weight: 400; line-height: 1.05; margin: 15px 0 18px; }
+    .how-left h2 i {
+      font-style: italic;
+      background: linear-gradient(90deg, #C084FC, #F472B6, #FB7185);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .how-left p { font-size: 14.5px; line-height: 1.75; color: #A8A4BE; max-width: 430px; }
+    .how-right { position: relative; }
+    .how-glow {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(139,92,246,.45) 0%, rgba(217,70,239,.28) 35%, rgba(59,130,246,.18) 60%, transparent 70%);
+      filter: blur(40px); pointer-events: none; z-index: 0;
+    }
+    .code-card {
+      position: relative; z-index: 1; background: #0A0818;
+      border: 1px solid rgba(255,255,255,.12); border-radius: 16px;
+      overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,.55);
+    }
+    .code-top {
+      display: flex; align-items: center; gap: 8px;
+      padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.02);
+    }
+    .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .code-top span:last-child { font-size: 11px; color: #8B87A3; margin-left: 6px; font-family: monospace; }
+    .code-body {
+      padding: 20px 18px; min-height: 260px; font-family: monospace;
+      font-size: 12.5px; line-height: 1.75; white-space: pre-wrap;
+      word-break: break-word; color: #EDEDF2;
+    }
+    .code-body .kw { color: #C084FC; }
+    .code-body .fn { color: #60A5FA; }
+    .code-body .str { color: #86EFAC; }
+    .code-body .com { color: #6B7280; font-style: italic; }
+    .code-body .var { color: #F472B6; }
+    .code-body .num { color: #FBBF24; }
+    .type-cursor { display: inline-block; width: 8px; height: 15px; background: #C084FC; vertical-align: -2px; animation: blink 1s infinite; }
+    @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+    /* ================= FAQ ================= */
+    .faq-section {
+      background:
+        radial-gradient(900px 500px at 10% 0%, rgba(88,28,135,.28), transparent 55%),
+        radial-gradient(700px 400px at 90% 100%, rgba(76,29,149,.22), transparent 60%),
+        linear-gradient(180deg, #0F0B19 0%, #0F0B19 100%);
+      padding: 80px 40px 100px; position: relative; overflow: hidden;
+    }
+    .faq-inner {
+      max-width: 1150px; margin: auto; display: grid;
+      grid-template-columns: 1fr 1.4fr; gap: 60px; align-items: start;
+      position: relative; z-index: 2;
+    }
+    .faq-left small { font-size: 11px; letter-spacing: 3px; color: #A78BFA; }
+    .faq-left h2 { font-family: Georgia, serif; font-size: 58px; font-weight: 400; line-height: 1.05; margin: 15px 0 16px; }
+    .faq-left h2 i {
+      font-style: italic;
+      background: linear-gradient(90deg, #C084FC, #F472B6, #FB7185);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .faq-left p { font-size: 13.5px; line-height: 1.7; color: #A8A4BE; max-width: 320px; }
+    .faq-list { border-top: 1px solid rgba(255,255,255,.12); }
+    .faq-item { border-bottom: 1px solid rgba(255,255,255,.12); cursor: pointer; background: transparent; transition: background .3s ease; }
+    .faq-q { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 0; }
+    .faq-q h3 { font-family: Georgia, serif; font-size: 17px; font-weight: 400; line-height: 1.4; color: #fff; transition: color .3s ease; }
+    .faq-item:hover { background: rgba(201,140,255,.04); }
+    .faq-item:hover .faq-q h3 { color: #c98cff; }
+    .faq-item:hover .faq-btn { border-color: #c98cff; color: #c98cff; }
+    .faq-item.open .faq-q h3 { color: #c98cff; }
+    .faq-btn {
+      flex-shrink: 0; width: 26px; height: 26px;
+      border: 1px solid rgba(255,255,255,.25); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: #fff;
+      transition: transform .35s ease, background .3s ease, border-color .3s ease, color .3s ease;
+    }
+    .faq-item.open .faq-btn { transform: rotate(45deg); background: #c98cff; border-color: #c98cff; color: #0F0B19; }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height .45s ease; }
+    .faq-a p { font-size: 13.5px; line-height: 1.75; color: #A8A4BE; padding: 0 0 22px; max-width: 600px; }
+
+    /* ================= CONTACT ================= */
+    .contact-wrap {
+      background:
+        radial-gradient(1100px 600px at 50% 115%, rgba(109,40,217,.55) 0%, rgba(76,29,149,.35) 35%, rgba(30,10,60,.18) 60%, transparent 75%),
+        radial-gradient(800px 400px at 50% 0%, rgba(88,28,135,.18), transparent 60%),
+        linear-gradient(180deg, #0F0B19 0%, #0A0618 55%, #120A28 100%);
+      position: relative; overflow: hidden;
+    }
+    .contact { position: relative; z-index: 2; text-align: center; padding: 110px 20px 90px; max-width: 1150px; margin: auto; }
+    .contact small { font-size: 11px; letter-spacing: 3px; color: #A78BFA; }
+    .contact h2 { font-family: Georgia, serif; font-size: 88px; font-weight: 400; line-height: 1.02; margin: 18px 0 16px; }
+    .contact h2 i {
+      font-style: italic;
+      background: linear-gradient(90deg, #C084FC, #F472B6, #FB7185);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .contact > p { font-size: 14.5px; line-height: 1.7; color: #A8A4BE; margin: auto; max-width: 600px; }
+    .contact-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 30px; }
+    .contact a.btn-main {
+      display: inline-block; background: linear-gradient(90deg, #7C3AED, #A855F7);
+      color: #fff; font-size: 13px; font-weight: 700; padding: 13px 24px;
+      border-radius: 30px; box-shadow: 0 10px 30px rgba(124,58,237,.45);
+    }
+    .contact a.btn-ghost {
+      display: inline-block; border: 1px solid rgba(255,255,255,.25);
+      color: #fff; font-size: 13px; padding: 13px 24px; border-radius: 30px;
+    }
+    .contact-links { margin-top: 36px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .contact-links a {
+      border: 1px solid rgba(255,255,255,.18); padding: 11px 18px;
+      border-radius: 30px; font-size: 12.5px; color: #EDEDF2;
+    }
+
+    /* ================= BUTTON HOVER - MAGNETIC + GOL ALO ================= */
+    .btn-hover { position: relative; overflow: hidden; isolation: isolate; will-change: transform; transition: transform .18s ease-out; }
+    .btn-hover::before {
+      content: ""; position: absolute; width: 180px; height: 180px; border-radius: 50%;
+      left: var(--mx, 50%); top: var(--my, 50%); transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(214,255,150,.58) 0%, rgba(190,242,100,.32) 35%, rgba(163,230,53,.12) 60%, transparent 72%);
+      opacity: 0; transition: opacity .2s ease; pointer-events: none; z-index: 0;
+    }
+    .btn-hover > * { position: relative; z-index: 1; }
+    .btn-hover:hover::before { opacity: 1; }
+    nav a.btn-hover { padding: 8px 12px; border-radius: 20px; }
+    .j-link.btn-hover { padding: 6px 10px; border-radius: 10px; display: inline-flex; }
+
+    footer {
+      display: flex; justify-content: space-between; padding: 20px 30px;
+      font-size: 12px; opacity: .5; border-top: 1px solid #222;
+      flex-wrap: wrap; gap: 10px; position: relative; z-index: 2; background: #0A0818;
+    }
+
+    /* ================= MOBILE ================= */
+    @media (max-width: 800px) {
+      .hero { flex-direction: column; padding: 120px 20px 40px; text-align: center; min-height: auto; }
+      .hero-text h1 { font-size: 52px; }
+      .hero-img { height: 450px; width: 100%; }
+      nav a { display: none; }
+      .section { padding: 50px 20px; }
+      .section h2 { font-size: 38px; }
+      .about-grid { grid-template-columns: 1fr; gap: 30px; }
+      .grid, .work-3, .journal-grid { grid-template-columns: 1fr; }
+      .work-big { flex-direction: column; }
+      .work-big .w-img { min-height: 420px; }
+      .stats-box { grid-template-columns: 1fr 1fr; }
+      .stat-cell:nth-child(2) { border-right: none; }
+      .stat-cell:nth-child(1), .stat-cell:nth-child(2) { border-bottom: 1px solid #24203A; }
+      .stat-cell h3 { font-size: 42px; }
+      .journey-section, .journal-section, .how-section, .faq-section { padding: 60px 20px; }
+      .journey-inner h2, .journal-inner h2, .how-left h2, .faq-left h2 { font-size: 42px; }
+      .journey-item h3 { font-size: 28px; }
+      .how-inner, .faq-inner { grid-template-columns: 1fr; gap: 35px; }
+      .how-glow { width: 320px; height: 320px; }
+      .contact { padding: 80px 20px 70px; }
+      .contact h2 { font-size: 48px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Cursor -->
+  <div id="cursorRing"></div>
+  <div id="cursorDot"></div>
+
+  <!-- ============ HERO - AGER MOTO ============ -->
+  <div class="hero-wrap">
+    <header>
+      <div class="logo">ruhan.</div>
+      <nav>
+        <a href="#about" class="btn-hover">ABOUT</a>
+        <a href="#work" class="btn-hover">WORK</a>
+        <a href="#journey" class="btn-hover">JOURNEY</a>
+        <a href="#journal" class="btn-hover">JOURNAL</a>
+        <a href="#contact" class="btn-hover">CONTACT</a>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <div class="hero-text">
+        <small>— SHOPIFY & WORDPRESS DEVELOPER</small>
+        <h1>Ruhan<br><i>Ruhan</i></h1>
+        <p>I build Shopify stores and WordPress sites that are built to <b>sell, not just to look good.</b></p>
+        <div class="founder">Founder & CTO - Ruhan Studio<br>Sylhet, Bangladesh • GMT+6</div>
+      </div>
+
+      <!-- HERO PIC - AGER MOTO SAJANO, KUNU ANIMATION NAI -->
+      <div class="hero-img">
+        <img src="WhatsApp_Image_2026-11-15_at_2.35.14_PM-removebg-preview.png" alt="Great Ruhan">
+        <div class="scroll">SCROLL TO EXPLORE ↓</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marquee -->
+  <div class="marquee">
+    <span>SHOPIFY • WORDPRESS • TECHNICAL SEO • CORE WEB VITALS • CONVERSION OPTIMIZATION • SHOPIFY • WORDPRESS • TECHNICAL SEO • CORE WEB VITALS •&nbsp;</span>
+  </div>
+
+  <!-- ============ ABOUT ============ -->
+  <div class="about-wrap">
+    <div class="section" id="about">
+      <small>—— &nbsp; 01 &nbsp; - &nbsp; ABOUT</small>
+      <h2 style="font-size:72px;line-height:1.05">Pretty is easy.<br><i>Profitable</i> is the craft.</h2>
+      <div class="about-grid">
+        <div class="about-left">
+          <p>I'm <b>Ruhan,</b> a Shopify and WordPress developer from Sylhet, Bangladesh. I started freelancing in <b>2024</b> and have been building websites and online stores for clients around the world ever since.</p>
+          <p>From <b>2024 to 2025</b> I was a <b>Freelance Developer</b>, working on projects for clients in the US, UK and Europe. It taught me what shipping at scale really takes: process, reviews and accountability.</p>
+          <p>In <b>2025</b> I founded <b>Ruhan Studio,</b> a founder-led Shopify & WordPress studio. As Founder & CTO I scope the work, write the code and stay after launch. Fast pages, clean structure, honest advice and clear pricing are the whole point.</p>
+          <p>Away from client work I run <b>Ruhan Academy,</b> a computer training institute in Sylhet, and you'll find me at WordCamps and local web, design and AI meetups whenever I can make it.</p>
+        </div>
+        <div class="about-right">
+          <div class="info-row"><span>ROLE</span><p>Founder & CTO, Ruhan Studio</p></div>
+          <div class="info-row"><span>FOCUS</span><p>Shopify, WordPress, WooCommerce, headless</p></div>
+          <div class="info-row"><span>BASED IN</span><p>Sylhet, Bangladesh (GMT+6), working with clients worldwide</p></div>
+          <div class="info-row"><span>CREDENTIALS</span><p>Shopify Partner · WordPress & WooCommerce certified developer</p></div>
+          <div class="info-row"><span>LANGUAGES</span><p>English, Bangla, Sylheti</p></div>
+        </div>
+      </div>
+      <div class="stats-box">
+        <div class="stat-cell"><h3><span class="count" data-target="400">0</span>+</h3><p>PROJECTS DELIVERED</p></div>
+        <div class="stat-cell"><h3><span class="count" data-target="4.9" data-decimal="1">0</span>★</h3><p>AVERAGE RATING</p></div>
+        <div class="stat-cell"><h3><span class="count" data-target="250">0</span>+</h3><p>FIVE-STAR REVIEWS</p></div>
+        <div class="stat-cell"><h3><span class="count" data-target="9">0</span>+</h3><p>YEARS BUILDING FOR THE WEB</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ WORK ============ -->
+  <div class="work-wrap">
+    <div class="section" id="work">
+      <small class="reveal">—— &nbsp; 02 &nbsp; - &nbsp; SELECTED WORK</small>
+      <h2 class="reveal reveal-d1" style="font-size:72px">Stores &amp; sites<br><i>I've shipped.</i></h2>
+      <p class="reveal reveal-d2" style="margin-top:10px">Recent builds led through WebVines, from platform migrations to stores that fulfil their own orders. Every one is live.</p>
+
+      <div class="work-tilt-wrap">
+        <div class="work-big reveal" id="fullCard">
+          <div class="w-img">
+            <div class="mock">
+              <div class="mock-top"><span>webvines</span><span>◉</span></div>
+              <h4>Vocal Star Music<br>Party and Music Store</h4>
+              <div class="mock-shot">
+                <div class="mock-inner">
+                  <div class="mock-hero"><b>VOCAL STAR MUSIC</b><p>Party tracks • Albums • Charts</p></div>
+                  <div class="mock-row"><div class="mock-thumb" style="background:#7C3AED"></div><div><b>Party Anthems Vol. 1</b><span>120 tracks • £9.99</span></div><div class="mock-play">▶</div></div>
+                  <div class="mock-row"><div class="mock-thumb" style="background:#DB2777"></div><div><b>Wedding Classics</b><span>85 tracks • £7.99</span></div><div class="mock-play">▶</div></div>
+                  <div class="mock-row"><div class="mock-thumb" style="background:#F59E0B"></div><div><b>Birthday Hits</b><span>96 tracks • £8.99</span></div><div class="mock-play">▶</div></div>
+                  <div class="mock-row"><div class="mock-thumb" style="background:#10B981"></div><div><b>Christmas Party</b><span>70 tracks • £6.99</span></div><div class="mock-play">▶</div></div>
+                  <div class="mock-footer">★ 5,000+ TRACKS • SECURE DELIVERY • SHOP NOW →</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="w-text">
+            <small>SHOPIFY • PLATFORM MIGRATION • UK</small>
+            <h3>Vocal Star Music <span>↗</span></h3>
+            <p>Moved a UK music store's 5,000+ tracks from a custom Laravel platform to Shopify, adding a track player, albums, chart lists and fully automatic, secure file delivery. Four Shopify stores built for the same client, with ongoing support.</p>
+            <div class="role"><b>ROLE</b><br>Led migration &amp; custom Shopify development at WebVines</div>
+            <span class="tag btn-hover">Shopify</span>
+            <span class="tag btn-hover">Liquid</span>
+            <span class="tag btn-hover">JavaScript</span>
+            <span class="tag btn-hover">Digital downloads</span><br>
+            <a href="#" class="case-link btn-hover">Read the case study →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="work-3">
+        <div class="work-mini reveal">
+          <div class="mini-img" style="background:#3A1A1A">
+            <h4>Milliverse Author<br>Book Store Website</h4>
+            <div class="mini-shot"><div class="mini-inner"><b>Pat Mills - New Book</b><p>Hardcover • Ebook • Audio<br>Order now - direct to BookVault<br>★★★★★ 4.9 rating</p><p style="margin-top:12px"><b>Best Seller</b><br>Home of the Brave - £14.99</p></div></div>
+          </div>
+          <div>
+            <small>WOOCOMMERCE • PUBLISHING</small>
+            <h3>Milliverse ↗</h3>
+            <p>Pat Mills' publishing imprint, rebuilt as a WooCommerce store. Each book sells as hardcover, ebook and audio, with every order fulfilled direct itself to BookVault, with zero manual steps.</p>
+            <div class="role"><b>ROLE</b><br>Redesign, WooCommerce &amp; fulfilment automation, care plan</div>
+            <span class="tag btn-hover">WordPress</span><span class="tag btn-hover">WooCommerce</span><span class="tag btn-hover">Elementor</span><br>
+            <a href="#" class="case-link btn-hover">Read the case study →</a>
+          </div>
+        </div>
+        <div class="work-mini reveal reveal-d1">
+          <div class="mini-img" style="background:#E8E0D8">
+            <h4 style="color:#111">Mira Kelley<br>Spiritual &amp; Life Coaching</h4>
+            <div class="mini-shot"><div class="mini-inner"><b>Hi, I'm Mira</b><p>Spiritual coaching • Life coaching<br>Book a free call today</p><p style="margin-top:12px"><b>90+ PageSpeed</b><br>Mobile &amp; Desktop - Kadence</p></div></div>
+          </div>
+          <div>
+            <small>WORDPRESS • REBUILD FOR SPEED</small>
+            <h3>Mira Kelley ↗</h3>
+            <p>A slow, mobile-broken Elementor site rebuilt on Kadence. 65+ pages, 100+ posts and 20+ products migrated with SEO intact, against a 90+ PageSpeed target on mobile and desktop.</p>
+            <div class="role"><b>ROLE</b><br>Speed audit, UX redesign, rebuild &amp; SEO migration</div>
+            <span class="tag btn-hover">Kadence</span><span class="tag btn-hover">Gutenberg</span><span class="tag btn-hover">WooCommerce</span><br>
+            <a href="#" class="case-link btn-hover">Read the case study →</a>
+          </div>
+        </div>
+        <div class="work-mini reveal reveal-d2">
+          <div class="mini-img" style="background:#111">
+            <h4>NYC Black Limo Luxury<br>Transportation Website</h4>
+            <div class="mini-shot"><div class="mini-inner"><b>NYC Black Limo Pro</b><p>Luxury transportation • NYC<br>Book your ride - 24/7</p><p style="margin-top:12px"><b>52 Pages • 300 Articles</b><br>SEO + Kymark booking</p></div></div>
+          </div>
+          <div>
+            <small>WORDPRESS • BOOKINGS &amp; SEO</small>
+            <h3>NYC Black Limo Pro ↗</h3>
+            <p>An easy-to-edit, SEO-first site for a New York limo service. 52 pages, 300 SEO articles and Kymark bookings built in, backed by monthly content support.</p>
+            <div class="role"><b>ROLE</b><br>WordPress build, SEO content &amp; booking integration</div>
+            <span class="tag btn-hover">WordPress</span><span class="tag btn-hover">Astra</span><span class="tag btn-hover">Spectra</span><span class="tag btn-hover">Kymark</span><br>
+            <a href="#" class="case-link btn-hover">Read the case study →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ JOURNEY ============ -->
+    <div class="journey-section" id="journey">
+      <div class="journey-inner">
+        <small>—— &nbsp; 03 &nbsp; - &nbsp; JOURNEY</small>
+        <h2>Nine years of <i>shipping.</i></h2>
+        <div class="journey-wrap">
+          <div class="journey-item">
+            <div class="journey-date">NOV 2017</div>
+            <h3>Freelance <i>begins</i></h3>
+            <p>Started taking WordPress and Shopify work on Fiverr for clients abroad. That profile now has a 4.9★ rating.</p>
+          </div>
+          <div class="journey-item">
+            <div class="journey-date">AUG 2019 - AUG 2023</div>
+            <h3>Front-End Developer, <i>SJ Innovation</i></h3>
+            <p>Front-end development for a US-based company's enterprise and Fortune 500 clients, inside a team with code reviews, QA and real deadlines.</p>
+          </div>
+          <div class="journey-item">
+            <div class="journey-date">2024</div>
+            <h3>Founded <i>WebVines</i></h3>
+            <p>A founder-led Shopify &amp; WordPress studio for businesses in the US, UK and beyond. Built to sell, not just to look good.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ JOURNAL ============ -->
+    <div class="journal-section" id="journal">
+      <div class="journal-inner">
+        <small>—— &nbsp; 04 &nbsp; - &nbsp; JOURNAL</small>
+        <h2>Notes from<br>the <i>workbench.</i></h2>
+        <p>Practical guides I write on the WebVines blog, drawn from real client projects.</p>
+        <div class="journal-grid">
+          <div class="journal-card">
+            <small>SHOPIFY - OCT 7, 2026</small>
+            <h3>How Much Does a Shopify Store Cost in 2026? Real Numbers</h3>
+            <p>Plans, fees, themes, apps and development, broken down into three sample first-year budgets.</p>
+            <div class="j-link btn-hover">Read the journal ↗</div>
+          </div>
+          <div class="journal-card">
+            <small>WORDPRESS - NOV 7, 2026</small>
+            <h3>Best WordPress Hosting for 2027: An Honest Agency Comparison</h3>
+            <p>Major hosts compared on price, renewal costs and which kind of site each one actually suits.</p>
+            <div class="j-link btn-hover">Read the journal ↗</div>
+          </div>
+          <div class="journal-card">
+            <small>SEO &amp; AI SEARCH - NOV 7, 2026</small>
+            <h3>How to Get Your Business Mentioned in ChatGPT and Google AI Overviews</h3>
+            <p>What tends to get a business cited in AI answers, from crawler access to consistent profiles.</p>
+            <div class="j-link btn-hover">Read the journal ↗</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ HOW I WORK ============ -->
+    <div class="how-section" id="how">
+      <div class="how-inner">
+        <div class="how-left">
+          <small>—— &nbsp; 05 &nbsp; - &nbsp; HOW I WORK</small>
+          <h2>Written in<br><i>PHP,</i> shipped<br>in <i>Liquid.</i></h2>
+          <p>Business goals first, pixels second. Every page has to load fast, work for everyone and earn its place, and launch day is where the care starts, not where it ends.</p>
+        </div>
+        <div class="how-right">
+          <div class="how-glow"></div>
+          <div class="code-card">
+            <div class="code-top">
+              <span class="code-dot" style="background:#FF5F57"></span>
+              <span class="code-dot" style="background:#FEBC2E"></span>
+              <span class="code-dot" style="background:#28C840"></span>
+              <span>razib-build.php</span>
+            </div>
+            <div class="code-body" id="typeCode"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ FAQ ============ -->
+    <div class="faq-section" id="faq">
+      <div class="faq-inner">
+        <div class="faq-left">
+          <small>—— &nbsp; 06 &nbsp; - &nbsp; FAQ</small>
+          <h2>Questions,<br><i>answered.</i></h2>
+          <p>What clients usually ask before we start working together.</p>
+        </div>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q"><h3>What does Razibur Rahman do?</h3><span class="faq-btn">+</span></div>
+            <div class="faq-a"><p>I'm a Shopify and WordPress developer and the Founder &amp; CTO of WebVines. I build custom Shopify stores and WordPress / WooCommerce websites, migrate sites between platforms, speed up slow sites, and add SEO, accessibility and AI features. I've been building for the web since 2017.</p></div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q"><h3>Can you migrate my store or website without losing SEO?</h3><span class="faq-btn">+</span></div>
+            <div class="faq-a"><p>Yes, I've moved stores and sites from custom platforms, Wix and older themes to Shopify and WordPress. Every migration includes a URL map with 301 redirects, preserved page titles and meta, and checks in Google Search Console after launch, so rankings carry over.</p></div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q"><h3>Do you work with clients in the US, UK and Europe?</h3><span class="faq-btn">+</span></div>
+            <div class="faq-a"><p>Yes. Most of my clients are in the US and UK. I work from Sylhet, Bangladesh (GMT+6), share progress in writing every working day and schedule calls in your time zone.</p></div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q"><h3>Can you make my Shopify or WordPress site faster?</h3><span class="faq-btn">+</span></div>
+            <div class="faq-a"><p>Yes. I start with a speed audit, then fix what actually slows the site: heavy themes and page builders, unused apps and plugins, unoptimised images and render-blocking scripts. The goal is passing Core Web Vitals on mobile and desktops.</p></div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q"><h3>Do you build AI features and automation?</h3><span class="faq-btn">+</span></div>
+            <div class="faq-a"><p>Yes. I add AI chat assistants, AI-assisted product and content workflows, and automations that connect your store or website to the tools you already use, so routine work happens without manual steps.</p></div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q"><h3>How long does a project take and how much does it cost?</h3><span class="faq-btn">+</span></div>
+            <div class="faq-a"><p>It depends on scope. After a short call you get a written proposal with a fixed price, a timeline and exactly what's included, before any work starts.</p></div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q"><h3>How do I start a project?</h3><span class="faq-btn">+</span></div>
+            <div class="faq-a"><p>Email razibur@webvines.com or book a free 30-minute call. Tell me what you sell, what isn't working and what you'd like the site to do, and I'll reply within one business day.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ CONTACT ============ -->
+    <div class="contact-wrap">
+      <div class="contact" id="contact">
+        <small>—— &nbsp; 07 &nbsp; - &nbsp; CONTACT</small>
+        <h2>Let's build<br>something that <i>sells.</i></h2>
+        <p>Tell me about your store or website. I usually reply within one business day.</p>
+        <div class="contact-btns">
+          <a href="mailto:razibur@webvines.com" class="btn-main btn-hover">razibur@webvines.com</a>
+          <a href="#" class="btn-ghost btn-hover">Book a 30-min call ↗</a>
+        </div>
+        <div class="contact-links">
+          <a href="#" class="btn-hover">WebVines ↗</a>
+          <a href="#" class="btn-hover">LinkedIn ↗</a>
+          <a href="#" class="btn-hover">X ↗</a>
+          <a href="#" class="btn-hover">WhatsApp ↗</a>
+          <a href="#" class="btn-hover">Fiverr ↗</a>
+          <a href="#" class="btn-hover">Upwork ↗</a>
+        </div>
+      </div>
+      <footer>
+        <span>© 2026 Ruhan - Founder &amp; CTO, Ruhan Studio</span>
+        <span>Made in Sylhet for clients worldwide</span>
+        <span>Back to top ↑</span>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    /* 1. COUNTER */
+    (function () {
+      const counters = document.querySelectorAll('.count');
+      let done = false;
+      function startCount() {
+        if (done) return; done = true;
+        counters.forEach(el => {
+          let target = parseFloat(el.getAttribute('data-target'));
+          let decimal = el.getAttribute('data-decimal') ? 1 : 0;
+          let start = null, duration = 2000;
+          function step(time) {
+            if (!start) start = time;
+            let p = (time - start) / duration; if (p > 1) p = 1;
+            let eased = 1 - Math.pow(1 - p, 3);
+            let val = target * eased;
+            el.textContent = decimal ? val.toFixed(1) : Math.floor(val);
+            if (p < 1) requestAnimationFrame(step);
+            else el.textContent = decimal ? target.toFixed(1) : target;
+          }
+          requestAnimationFrame(step);
+        });
+      }
+      let box = document.querySelector('.stats-box');
+      if (box) {
+        let obs = new IntersectionObserver((entries) => {
+          entries.forEach(e => { if (e.isIntersecting) startCount(); });
+        }, { threshold: 0.4 });
+        obs.observe(box);
+      }
+    })();
+
+    /* 2. REVEAL */
+    (function () {
+      let els = document.querySelectorAll('.reveal');
+      let obs = new IntersectionObserver((es) => {
+        es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('show'); obs.unobserve(e.target); } });
+      }, { threshold: 0.15 });
+      els.forEach(el => obs.observe(el));
+    })();
+
+    /* 3. WORK TILT */
+    (function () {
+      function tilt(card, maxY, maxX, pic) {
+        var tx = 0, ty = 0, cx = 0, cy = 0;
+        var ptx = 0, pty = 0, pcx = 0, pcy = 0;
+        card.addEventListener('mousemove', function (e) {
+          var r = card.getBoundingClientRect();
+          var px = (e.clientX - r.left) / r.width;
+          var py = (e.clientY - r.top) / r.height;
+          ty = (px - 0.5) * 2 * maxY; tx = -(py - 0.5) * 2 * maxX;
+          if (pic) { pty = (px - 0.5) * 2 * (maxY + 6); ptx = -(py - 0.5) * 2 * (maxX + 5); }
+        });
+        card.addEventListener('mouseleave', function () { tx = 0; ty = 0; ptx = 0; pty = 0; });
+        (function loop() {
+          cx += (tx - cx) * 0.15; cy += (ty - cy) * 0.15;
+          card.style.transform = 'rotateX(' + cx + 'deg) rotateY(' + cy + 'deg)';
+          if (pic) {
+            pcx += (ptx - pcx) * 0.15; pcy += (pty - pcy) * 0.15;
+            pic.style.transform = 'rotateX(' + pcx + 'deg) rotateY(' + pcy + 'deg) translateZ(25px)';
+          }
+          requestAnimationFrame(loop);
+        })();
+      }
+      var full = document.getElementById('fullCard');
+      if (full) tilt(full, 10, 8, null);
+      document.querySelectorAll('.work-mini').forEach(function (c) {
+        var pic = c.querySelector('.mini-shot'); tilt(c, 8, 6, pic);
+      });
+    })();
+
+    /* 4. JOURNAL TILT */
+    (function () {
+      document.querySelectorAll('.journal-card').forEach(function (card) {
+        var tx = 0, ty = 0, cx = 0, cy = 0, hover = false;
+        card.addEventListener('mousemove', function (e) {
+          var r = card.getBoundingClientRect();
+          var px = (e.clientX - r.left) / r.width;
+          var py = (e.clientY - r.top) / r.height;
+          ty = (px - 0.5) * 2 * 9; tx = -(py - 0.5) * 2 * 7; hover = true;
+        });
+        card.addEventListener('mouseleave', function () { tx = 0; ty = 0; hover = false; });
+        (function loop() {
+          cx += (tx - cx) * 0.15; cy += (ty - cy) * 0.15;
+          var lift = hover ? -8 : 0;
+          card.style.transform = 'translateY(' + lift + 'px) rotateX(' + cx + 'deg) rotateY(' + cy + 'deg)';
+          requestAnimationFrame(loop);
+        })();
+      });
+    })();
+
+    /* 5. CURSOR */
+    (function () {
+      var ring = document.getElementById('cursorRing');
+      var dot = document.getElementById('cursorDot');
+      if (!ring || !dot) return;
+      var rx = innerWidth / 2, ry = innerHeight / 2;
+      var tx = rx, ty = ry;
+      document.addEventListener('mousemove', function (e) {
+        tx = e.clientX; ty = e.clientY;
+        dot.style.left = tx + 'px'; dot.style.top = ty + 'px';
+      });
+      (function loop() {
+        rx += (tx - rx) * 0.18; ry += (ty - ry) * 0.18;
+        ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+        requestAnimationFrame(loop);
+      })();
+      document.querySelectorAll('a, .journal-card, .work-mini, .work-big, .faq-item, button, .code-card').forEach(function (el) {
+        el.addEventListener('mouseenter', function () { ring.classList.add('big'); });
+        el.addEventListener('mouseleave', function () { ring.classList.remove('big'); });
+      });
+    })();
+
+    /* 6. HOW I WORK - AUTO TYPE */
+    (function () {
+      var el = document.getElementById('typeCode');
+      if (!el) return;
+      var fullCode = [
+        "<?php",
+        "// How I build: Every project, every time. //",
+        "function razib_build( $project ) {",
+        "  $scope = listen( $project->goals ); // Business first",
+        "  foreach ( $scope->pages as $page ) {",
+        "    $design = $page->get( 'fast', 'accessible', 'on-brand' );",
+        "    $ship( $page );",
+        "  }",
+        "  measure( 'Core Web Vitals', 'conversions' );",
+        "  return care_for( $project ); // Launch is day one",
+        "}"
+      ].join("\n");
+      function highlight(code) {
+        var h = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        h = h.replace(/(\/\/.*)/g, '<span class="com">$1</span>');
+        h = h.replace(/('[^']*')/g, '<span class="str">$1</span>');
+        h = h.replace(/\b(function|foreach|return|as)\b/g, '<span class="kw">$1</span>');
+        h = h.replace(/\b(razib_build|listen|measure|care_for)\b/g, '<span class="fn">$1</span>');
+        h = h.replace(/(\$[a-zA-Z_]+)/g, '<span class="var">$1</span>');
+        return h;
+      }
+      var i = 0, started = false;
+      function start() {
+        if (started) return; started = true;
+        (function type() {
+          if (i <= fullCode.length) {
+            el.innerHTML = highlight(fullCode.slice(0, i)) + '<span class="type-cursor"></span>';
+            i++; setTimeout(type, 28);
+          } else { setTimeout(function () { i = 0; type(); }, 3500); }
+        })();
+      }
+      var sec = document.getElementById('how');
+      if (sec) {
+        var obs = new IntersectionObserver(function (es) {
+          es.forEach(function (e) { if (e.isIntersecting) { start(); obs.disconnect(); } });
+        }, { threshold: 0.3 });
+        obs.observe(sec);
+      } else { start(); }
+    })();
+
+    /* 7. FAQ */
+    (function () {
+      document.querySelectorAll('.faq-item').forEach(function (item) {
+        var q = item.querySelector('.faq-q');
+        var a = item.querySelector('.faq-a');
+        q.addEventListener('click', function () {
+          var isOpen = item.classList.contains('open');
+          if (isOpen) { item.classList.remove('open'); a.style.maxHeight = '0px'; }
+          else { item.classList.add('open'); a.style.maxHeight = a.scrollHeight + 'px'; }
+        });
+      });
+    })();
+
+    /* 8. BUTTON MAGNETIC + GOL ALO */
+    (function () {
+      document.querySelectorAll('.btn-hover').forEach(function (btn) {
+        var tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+        function loop() {
+          cx += (tx - cx) * 0.18; cy += (ty - cy) * 0.18;
+          btn.style.transform = 'translate(' + cx + 'px,' + cy + 'px)';
+          if (Math.abs(tx - cx) > 0.1 || Math.abs(ty - cy) > 0.1) { raf = requestAnimationFrame(loop); }
+          else { btn.style.transform = 'translate(' + tx + 'px,' + ty + 'px)'; raf = null; }
+        }
+        btn.addEventListener('mousemove', function (e) {
+          var r = btn.getBoundingClientRect();
+          var mx = e.clientX - r.left, my = e.clientY - r.top;
+          btn.style.setProperty('--mx', mx + 'px');
+          btn.style.setProperty('--my', my + 'px');
+          tx = (mx - r.width / 2) * 0.32;
+          ty = (my - r.height / 2) * 0.45;
+          if (!raf) raf = requestAnimationFrame(loop);
+        });
+        btn.addEventListener('mouseleave', function () {
+          tx = 0; ty = 0;
+          btn.style.transition = 'transform .45s cubic-bezier(.2,.8,.2,1)';
+          if (!raf) raf = requestAnimationFrame(loop);
+          setTimeout(function () { btn.style.transition = 'transform .18s ease-out'; }, 450);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
